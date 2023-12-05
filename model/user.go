@@ -1,6 +1,8 @@
 package model
 
-import "github.com/gomodule/redigo/redis"
+import (
+	"github.com/gomodule/redigo/redis"
+)
 
 type User struct {
 	Key  string
@@ -19,10 +21,10 @@ func RedisGetHGetUserData(redisConn redis.Conn, key string) (User, error) {
 	if err != nil {
 		return User{}, err
 	}
-	userName, _ := redis.String(rep["user_name"], nil)
-	phoneNumber, _ := redis.String(rep["phone_number"], nil)
-	height, _ := redis.Float64(rep["height"], nil)
-	cash, _ := redis.Int64(rep["cash"], nil)
+	userName, err := redis.String(rep["user_name"], nil)
+	phoneNumber, err := redis.String(rep["phone_number"], nil)
+	height, err := redis.Float64(redisConn.Do("HGET", key, "height"))
+	cash, err := redis.Int64(redisConn.Do("HGET", key, "cash"))
 
 	return User{
 		Key: key,
